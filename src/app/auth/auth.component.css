@@ -1,0 +1,19 @@
+form,
+h4 {
+  padding: 1.5rem 2rem;
+  border: 1px dashed var(--secondary);
+  border-radius: 5px;
+  box-shadow: 6px 4px 12px 0px rgba(0, 0, 0, 0.29);
+  background-color: var(--light);
+}
+
+h4 {
+  padding: 1rem 1rem;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 576px) {
+  h4 {
+    margin-top: auto;
+  }
+}

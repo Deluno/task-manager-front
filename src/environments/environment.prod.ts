@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  taskManagerAPIPath: 'https://dancha-task-manager-api.herokuapp.com',
 };

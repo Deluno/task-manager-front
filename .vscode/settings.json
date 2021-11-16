@@ -1,0 +1,7 @@
+{
+  "css.styleSheets": [
+    "${fileBasenameNoExtension}.css",
+    "/node_modules/bootstrap/dist/css/bootstrap.min.css",
+  ],
+  "angular.enable-strict-mode-prompt": false
+}

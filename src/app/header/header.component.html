@@ -1,0 +1,83 @@
+<nav class="navbar navbar-expand-lg sticky-top navbar-dark bg-dark mb-3">
+  <a class="navbar-brand" [routerLink]="['/about']">Task manager</a>
+
+  <button class="navbar-toggler" type="button" (click)="toggleCollapse()">
+    &#9776;
+  </button>
+
+  <div
+    class="collapse navbar-collapse"
+    [ngbCollapse]="isMenuCollapsed"
+    (window:resize)="toggleCollapse(true)"
+  >
+    <ul class="navbar-nav m-auto" *ngIf="isAuth">
+      <li class="nav-item px-2">
+        <a
+          class="nav-link"
+          routerLink="/calendar"
+          routerLinkActive="active"
+          (click)="toggleCollapse(true)"
+        >
+          <i i-bs name="calendar3" class="mr-1"></i>
+          Calendar
+        </a>
+      </li>
+      <li class="nav-item px-2">
+        <a
+          class="nav-link"
+          routerLink="/tasks"
+          routerLinkActive="active"
+          (click)="toggleCollapse(true)"
+        >
+          <i i-bs name="list-task" class="mr-1"></i>
+          Tasks
+        </a>
+      </li>
+      <li class="nav-item px-2">
+        <a
+          class="nav-link"
+          routerLink="/about"
+          routerLinkActive="active"
+          (click)="toggleCollapse(true)"
+        >
+          <i i-bs name="blockquote-left" class="mr-1"></i>
+          About
+        </a>
+      </li>
+    </ul>
+    <div class="btn-toolbar bt-devider-lg bt-light ml-auto" *ngIf="!isAuth">
+      <button
+        class="btn btn-secondary mr-2"
+        type="button"
+        [routerLink]="['/auth', 'sign-in']"
+        (click)="toggleCollapse(true)"
+      >
+        <i i-bs name="box-arrow-in-right" class="mr-1"></i>
+        Sign In
+      </button>
+      <button
+        class="btn btn-primary"
+        type="button"
+        [routerLink]="['/auth', 'sign-up']"
+        (click)="toggleCollapse(true)"
+      >
+        <i i-bs name="plus-square" class="mr-1"></i>
+        Sign Up
+      </button>
+    </div>
+    <div
+      class="btn-toolbar bt-devider-lg bt-light justify-content-end"
+      *ngIf="isAuth"
+    >
+      <button
+        class="btn btn-danger mr-2"
+        type="button"
+        [routerLink]="['/auth', 'sign-in']"
+        (click)="onLogout(); toggleCollapse(true)"
+      >
+        <i i-bs name="box-arrow-left" class="mr-1"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>

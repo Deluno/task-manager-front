@@ -1,0 +1,29 @@
+i {
+  margin-left: -0.2rem;
+}
+
+.bt-light {
+  border-top-color: var(--light);
+}
+
+.bt-dark {
+  border-top-color: var(--dark);
+}
+
+@media (max-width: 767px) {
+  .bt-devider-md {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top-width: 1px;
+    border-top-style: solid;
+  }
+}
+
+@media (max-width: 991px) {
+  .bt-devider-lg {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top-width: 1px;
+    border-top-style: solid;
+  }
+}
