@@ -18,6 +18,7 @@ const routes: Routes = [
       { path: 'sign-up', component: AuthComponent },
     ],
   },
+  { path: '**', redirectTo: '/tasks' },
 ];
 
 @NgModule({

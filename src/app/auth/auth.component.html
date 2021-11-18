@@ -1,9 +1,13 @@
 <div class="row">
   <div class="col-sm-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
-    <h4>{{ isSignUp ? "Sign Up" : "Sign In" }}</h4>
+    <h4 class="title">{{ isSignUp ? "Sign Up" : "Sign In" }}</h4>
 
     <div *ngIf="isLoading" style="text-align: center">
       <app-loading-spinner></app-loading-spinner>
+    </div>
+
+    <div *ngIf="!isLoading && errorMessage" class="warning">
+      {{ errorMessage }}
     </div>
 
     <form [formGroup]="authForm" (ngSubmit)="onSubmit()" *ngIf="!isLoading">

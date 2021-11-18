@@ -1,19 +1,33 @@
 form,
-h4 {
+.title,
+.warning {
   padding: 1.5rem 2rem;
+  margin-bottom: 0.5rem;
   border: 1px dashed var(--secondary);
   border-radius: 5px;
   box-shadow: 6px 4px 12px 0px rgba(0, 0, 0, 0.29);
   background-color: var(--light);
 }
 
-h4 {
+.title {
   padding: 1rem 1rem;
   margin-top: 2.5rem;
 }
 
+.warning {
+  padding: 1rem 1rem;
+  border: 1px dashed white;
+  border-radius: 5px;
+  background-color: var(--danger);
+  color: white;
+}
+
 @media (max-width: 576px) {
-  h4 {
+  .title {
     margin-top: auto;
   }
+}
+
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
 }

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../auth/services/auth.service';
+import { TokenStorageService } from '../auth/services/token-storage.service';
 
 @Component({
   selector: 'app-header',
@@ -9,15 +10,16 @@ import { AuthService } from '../auth/auth.service';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isMenuCollapsed = true;
-  isAuth = false;
-  private authSub: Subscription;
+  isAuth: boolean;
+  private _authSub: Subscription;
 
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.authSub = this.authService.user$.subscribe((user) => {
-      this.isAuth = !!user;
+    this.authService.signInStatusChange$.subscribe((status) => {
+      this.isAuth = status;
     });
+    this.authService.autoSignIn();
   }
 
   toggleCollapse(state?: boolean) {
@@ -29,6 +31,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.authSub.unsubscribe();
+    this._authSub.unsubscribe();
   }
 }

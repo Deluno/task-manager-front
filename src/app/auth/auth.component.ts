@@ -3,7 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { paswordsMatchValidator } from '../shared/passwords-match-validator.directive';
-import { AuthService } from './auth.service';
+import { AuthResponseData, AuthService } from './services/auth.service';
+import { TokenStorageService } from './services/token-storage.service';
 
 @Component({
   selector: 'app-auth',
@@ -11,13 +12,21 @@ import { AuthService } from './auth.service';
   styleUrls: ['./auth.component.css'],
 })
 export class AuthComponent implements OnInit {
-  isSignUp = false;
-  isLoading = false;
+  isSignUp: boolean;
+  isLoading: boolean;
+  errorMessage: string;
   authForm: FormGroup;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private tokenStorageService: TokenStorageService
+  ) {}
 
   ngOnInit(): void {
+    if (this.tokenStorageService.getAccessToken()) {
+      this.router.navigate(['/tasks']);
+    }
     this.isSignUp = this.router.url === '/auth/sign-up';
     this.initForm();
   }
@@ -28,10 +37,12 @@ export class AuthComponent implements OnInit {
     const username = this.authForm.value.username;
     const password = this.authForm.value.password;
 
-    let auth$: Observable<any>;
+    let auth$: Observable<AuthResponseData>;
 
     this.isLoading = true;
     if (this.isSignUp) {
+      const email = this.authForm.value.email;
+      auth$ = this.authService.signup(username, email, password);
     } else {
       auth$ = this.authService.signin(username, password);
     }
@@ -42,7 +53,8 @@ export class AuthComponent implements OnInit {
         this.router.navigate(['/tasks']);
       },
       (errorMessage) => {
-        console.log(errorMessage);
+        this.isLoading = false;
+        this.errorMessage = errorMessage;
       }
     );
 

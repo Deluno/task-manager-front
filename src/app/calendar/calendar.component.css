@@ -1,0 +1,16 @@
+.calendar-header {
+  margin: auto;
+}
+
+.month-header {
+  display: inline-block;
+  padding: 0 30px;
+  margin: 20px 0 25px;
+}
+
+.month-selector {
+  color: var(--light);
+  background-color: var(--secondary);
+  border-radius: 4px;
+  padding: 0.3rem 0.75rem;
+}

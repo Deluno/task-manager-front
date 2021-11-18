@@ -23,7 +23,7 @@ import { CalendarComponent } from './calendar/calendar.component';
 import { AboutComponent } from './about/about.component';
 import { AuthComponent } from './auth/auth.component';
 import { PasswordsMatchValidatorDirective } from './shared/passwords-match-validator.directive';
-import { AuthInterceptor } from './auth/auth-interceptor.service';
+import { AuthInterceptor } from './auth/services/auth-interceptor.service';
 import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 
 const icons = {
