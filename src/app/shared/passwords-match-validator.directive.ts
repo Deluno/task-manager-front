@@ -29,7 +29,11 @@ export const paswordsMatchValidator: ValidatorFn = (
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');
 
+  if (password && confirmPassword && password.value !== confirmPassword.value) {
+    confirmPassword.setErrors({ notMatch: true });
+  }
+
   return password && confirmPassword && password.value !== confirmPassword.value
-    ? { passMatch: false }
+    ? { notMatch: true }
     : null;
 };

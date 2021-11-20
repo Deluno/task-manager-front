@@ -9,6 +9,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { Subject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { User } from '../user.model';
 import { TokenStorageService } from './token-storage.service';
 
 export interface AuthResponseData {
@@ -24,7 +25,8 @@ const httpOptions = {
   providedIn: 'root',
 })
 export class AuthService {
-  signInStatusChange$ = new Subject<boolean>();
+  signInStatusChange$ = new Subject<User>();
+  private _autoLogoutTimer: any;
 
   constructor(
     private http: HttpClient,
@@ -49,12 +51,13 @@ export class AuthService {
   }
 
   autoSignIn() {
-    if (this.isSignedIn()) {
-      this.router.navigate(['/tasks']);
-    } else {
-      this.router.navigate(['/auth', 'sign-in']);
-    }
-    this.signInStatusChange$.next(this.isSignedIn());
+    const accessToken = this.tokenStorageService.getAccessToken();
+    if (!accessToken) return;
+
+    const user = this.tokenStorageService.getUser();
+    this.signInStatusChange$.next(user);
+    const accessTokenExp = this.jwtHelper.getTokenExpirationDate(accessToken);
+    this.autoLogout(accessTokenExp);
   }
 
   signup(username: string, email: string, password: string) {
@@ -74,8 +77,37 @@ export class AuthService {
 
   logout() {
     this.tokenStorageService.clearStorage();
-    this.signInStatusChange$.next(false);
+    this.signInStatusChange$.next(null);
     this.router.navigate(['/auth', 'sign-in']);
+    this.clearAutoLogoutTimer();
+  }
+
+  autoLogout(accessTokenExp: Date) {
+    const expDuration = accessTokenExp.getTime() - new Date().getTime();
+    this._autoLogoutTimer = setTimeout(() => {
+      this.refreshAccess().subscribe(
+        (resData) => {
+          // alert('autoLoginRefresh');
+
+          this.clearAutoLogoutTimer();
+          this.handleSign(resData.accessToken, resData.refreshToken);
+        },
+        (errorRes) => {
+          this.logout();
+        }
+      );
+    }, expDuration);
+  }
+
+  private refreshAccess() {
+    const refresher = this.tokenStorageService.getRefreshToken();
+    return this.http.post<AuthResponseData>(
+      environment.taskManagerAPIPath + '/auth/refresh',
+      {
+        refreshToken: refresher,
+      },
+      httpOptions
+    );
   }
 
   isSignedIn() {
@@ -97,14 +129,23 @@ export class AuthService {
   }
 
   private handleSign(accessToken: string, refreshToken: string) {
-    const user = this.jwtHelper.decodeToken(accessToken);
+    const userData = this.jwtHelper.decodeToken(accessToken);
+    const user = new User(userData.username, userData.role);
 
     this.tokenStorageService.saveUser(user);
     this.tokenStorageService.saveAccessToken(accessToken);
     this.tokenStorageService.saveRefreshToken(refreshToken);
 
-    this.signInStatusChange$.next(true);
+    this.signInStatusChange$.next(user);
 
-    this.router.navigate(['/tasks']);
+    const accessTokenExp = this.jwtHelper.getTokenExpirationDate(accessToken);
+    this.autoLogout(accessTokenExp);
+  }
+
+  private clearAutoLogoutTimer() {
+    if (this._autoLogoutTimer) {
+      clearTimeout(this._autoLogoutTimer);
+    }
+    this._autoLogoutTimer = null;
   }
 }

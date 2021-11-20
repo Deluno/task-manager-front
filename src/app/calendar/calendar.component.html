@@ -1,17 +1,67 @@
-<div class="row calendar-header justify-content-center">
-  <div>
-    <a class="month-selector">April</a>
-    <h4 class="month-header">May 2015</h4>
-    <a class="month-selector">June </a>
-  </div>
+<div class="row justify-content-center">
+  <form class="form col-12 col-lg-7">
+    <div class="form-group font-size-xs justify-content-center row m-0">
+      <div class="col-4 mb-2 d-none d-sm-block">
+        <input
+          class="btn btn-primary form-control"
+          type="button"
+          value="Previous"
+          (click)="onPrevMonth()"
+        />
+      </div>
+      <div class="col-4 text-center d-none d-sm-block">
+        <h4 class="m-0">
+          {{ currentMonth }}
+        </h4>
+      </div>
+      <div class="col-4 mb-2 d-none d-sm-block">
+        <input
+          class="btn btn-primary form-control"
+          type="button"
+          value="Next"
+          (click)="onNextMonth()"
+        />
+      </div>
+      <div class="col-6 px-2 px-sm-3">
+        <input
+          class="form-control"
+          type="text"
+          id="year"
+          name="year"
+          placeholder="Year"
+          (change)="onYearChange()"
+          [(ngModel)]="currentYear"
+        />
+      </div>
+      <div class="col-6 px-2 px-sm-3">
+        <select
+          class="custom-select"
+          (change)="onMonthChange()"
+          [(ngModel)]="currentMonthNumber"
+          name="selectMonth"
+        >
+          <option *ngFor="let mon of months; let i = index" [ngValue]="i">
+            {{ mon }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </form>
 </div>
 <hr />
 <div class="row">
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
-  <div class="col-lg-1 col-md-4 col-sm-6">Item</div>
+  <div class="calendar-item" *ngFor="let day of weekDays">
+    <h4 class="title">{{ day }}</h4>
+  </div>
+</div>
+<div class="row align-items-center">
+  <div
+    class="calendar-item d-flex justify-content-center"
+    *ngFor="let day of currentMonthDays"
+  >
+    <div class="day" [ngClass]="day.active ? 'day-active' : 'day-unavailable'">
+      <span>{{ day }}</span>
+      <div class="notify" *ngIf="day.hasTasks"></div>
+    </div>
+  </div>
 </div>

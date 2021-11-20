@@ -24,8 +24,11 @@ export class AuthComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.tokenStorageService.getAccessToken()) {
-      this.router.navigate(['/tasks']);
+    if (this.authService.isSignedIn()) {
+      const user = this.tokenStorageService.getUser();
+      console.log(user.username);
+
+      this.router.navigate(['/users', user.username, 'calendar']);
     }
     this.isSignUp = this.router.url === '/auth/sign-up';
     this.initForm();
@@ -50,7 +53,7 @@ export class AuthComponent implements OnInit {
     auth$.subscribe(
       (res) => {
         this.isLoading = false;
-        this.router.navigate(['/tasks']);
+        this.router.navigate(['/auth/sign-in']);
       },
       (errorMessage) => {
         this.isLoading = false;

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/services/auth.service';
-import { TokenStorageService } from '../auth/services/token-storage.service';
+import { User } from '../auth/user.model';
 
 @Component({
   selector: 'app-header',
@@ -11,13 +11,19 @@ import { TokenStorageService } from '../auth/services/token-storage.service';
 export class HeaderComponent implements OnInit, OnDestroy {
   isMenuCollapsed = true;
   isAuth: boolean;
+  private _user: User;
   private _authSub: Subscription;
 
   constructor(private authService: AuthService) {}
 
+  get username() {
+    return this._user.username;
+  }
+
   ngOnInit(): void {
-    this.authService.signInStatusChange$.subscribe((status) => {
-      this.isAuth = status;
+    this.authService.signInStatusChange$.subscribe((user) => {
+      this.isAuth = !!user;
+      this._user = user;
     });
     this.authService.autoSignIn();
   }

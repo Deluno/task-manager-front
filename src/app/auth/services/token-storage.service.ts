@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { JwtHelperService } from '@auth0/angular-jwt';
+
 import { User } from '../user.model';
 
 const ACCESS_TOKEN_KEY = 'auth-access-token';
@@ -9,7 +11,7 @@ const USER_KEY = 'auth-user';
   providedIn: 'root',
 })
 export class TokenStorageService {
-  constructor() {}
+  constructor(private jwtHelper: JwtHelperService) {}
 
   clearStorage(): void {
     sessionStorage.clear();
@@ -21,7 +23,8 @@ export class TokenStorageService {
   }
 
   getAccessToken(): string | null {
-    return sessionStorage.getItem(ACCESS_TOKEN_KEY);
+    const token = sessionStorage.getItem(ACCESS_TOKEN_KEY);
+    return token && !this.jwtHelper.isTokenExpired(token) ? token : null;
   }
 
   saveRefreshToken(token: string): void {
@@ -30,7 +33,8 @@ export class TokenStorageService {
   }
 
   getRefreshToken(): string | null {
-    return sessionStorage.getItem(REFRESH_TOKEN_KEY);
+    const token = sessionStorage.getItem(REFRESH_TOKEN_KEY);
+    return token && !this.jwtHelper.isTokenExpired(token) ? token : null;
   }
 
   saveUser(user: User): void {
