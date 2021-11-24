@@ -10,6 +10,14 @@ i {
   border-top-color: var(--dark);
 }
 
+.btn {
+  padding: 8px 14px;
+}
+
+.btn-toolbar {
+  justify-content: end !important;
+}
+
 @media (max-width: 767px) {
   .bt-devider-md {
     margin-top: 1rem;

@@ -1,8 +1,9 @@
 export class Day {
   constructor(
     public date: Date,
-    public active: boolean,
-    public hasTasks: boolean
+    public isActive: boolean,
+    public hasTasks: boolean,
+    public isToday?: boolean
   ) {}
 
   toString() {

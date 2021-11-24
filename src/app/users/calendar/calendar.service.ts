@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TasksService } from '../tasks/tasks.service';
+import { TasksService } from 'src/app/shared/services/tasks.service';
 import { Day } from './day.model';
 
 @Injectable({
@@ -37,18 +37,19 @@ export class CalendarService {
   }
 
   getDaysList(year: number, month: number): Day[] {
+    const now = new Date();
     const d = new Date(year, month + 1, 0);
     const pd = new Date(year, month, 0);
     const totalDays = 42;
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    const daysBefore = Array.from({ length: totalDays }, (_, i) => {
+    return Array.from({ length: totalDays }, (_, i) => {
       const dayNum = i + pd.getDate() - pd.getDay() + 1;
       const date = new Date(year, month - 1, dayNum);
       const isActive = date.getMonth() === d.getMonth();
-      const hasTasks = false;
-      return new Day(date, isActive, hasTasks);
+      const isToday = date.getTime() == today.getTime();
+      const hasTasks = this.tasksService.hasTasksOnDate(date);
+      return new Day(date, isActive, hasTasks, isToday);
     });
-
-    return daysBefore;
   }
 }

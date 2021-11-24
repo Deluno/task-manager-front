@@ -14,7 +14,7 @@
       <li class="nav-item px-2">
         <a
           class="nav-link"
-          [routerLink]="['/users', username, 'calendar']"
+          [routerLink]="['/users', user.username, 'calendar']"
           routerLinkActive="active"
           (click)="toggleCollapse(true)"
         >
@@ -25,23 +25,23 @@
       <li class="nav-item px-2">
         <a
           class="nav-link"
-          [routerLink]="['/users', username, 'tasks']"
           routerLinkActive="active"
+          [routerLink]="['/users', user.username, 'tasks']"
           (click)="toggleCollapse(true)"
         >
           <i i-bs name="list-task" class="mr-1"></i>
           Tasks
         </a>
       </li>
-      <li class="nav-item px-2">
+      <li class="nav-item px-2" *ngIf="user.role === 'admin'">
         <a
           class="nav-link"
-          routerLink="/about"
+          [routerLink]="['/users', 'dashboard']"
           routerLinkActive="active"
           (click)="toggleCollapse(true)"
         >
           <i i-bs name="blockquote-left" class="mr-1"></i>
-          About
+          Dashboard
         </a>
       </li>
     </ul>
@@ -65,10 +65,7 @@
         Sign Up
       </button>
     </div>
-    <div
-      class="btn-toolbar bt-devider-lg bt-light justify-content-end"
-      *ngIf="isAuth"
-    >
+    <div class="btn-toolbar bt-devider-lg bt-light" *ngIf="isAuth">
       <button
         class="btn btn-danger mr-2"
         type="button"

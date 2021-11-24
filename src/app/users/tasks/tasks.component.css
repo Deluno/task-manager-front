@@ -1,0 +1,8 @@
+.date-title {
+  line-height: 2.5rem;
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+}

@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="col-lg-8 col-xl-6 offset-lg-2 offset-xl-3">
+    <div class="component-header">
+      <span>
+        {{ task.time }}
+      </span>
+      <div class="btn-toolbar">
+        <app-task-modal [taskId]="task.id"></app-task-modal>
+        <button class="btn btn-danger ml-1" (click)="onDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8 col-xl-6 offset-lg-2 offset-xl-3 mb-4">
+    <div class="component-body">
+      <div class="component-body-field d-flex">
+        <i i-bs name="fonts" class="mr-3"></i>
+        <span class="component-title w-100">{{ task.title }}</span>
+      </div>
+
+      <div class="component-body-field d-flex mb-0">
+        <i i-bs name="justify-left" class="mr-3"></i>
+        <span>{{ task.description }}</span>
+      </div>
+      <hr />
+      <p><i i-bs name="file-earmark" class="mr-3"></i>{{ "Some files" }}</p>
+    </div>
+  </div>
+</div>

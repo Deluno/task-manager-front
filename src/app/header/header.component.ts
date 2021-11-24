@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/services/auth.service';
-import { User } from '../auth/user.model';
+import { User } from '../shared/models/user.model';
 
 @Component({
   selector: 'app-header',
@@ -11,21 +11,21 @@ import { User } from '../auth/user.model';
 export class HeaderComponent implements OnInit, OnDestroy {
   isMenuCollapsed = true;
   isAuth: boolean;
-  private _user: User;
+  user: User;
   private _authSub: Subscription;
 
   constructor(private authService: AuthService) {}
 
-  get username() {
-    return this._user.username;
+  get today() {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString();
   }
 
   ngOnInit(): void {
     this.authService.signInStatusChange$.subscribe((user) => {
       this.isAuth = !!user;
-      this._user = user;
+      this.user = user;
     });
-    this.authService.autoSignIn();
   }
 
   toggleCollapse(state?: boolean) {

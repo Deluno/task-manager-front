@@ -1,0 +1,13 @@
+<div class="row">
+  <div class="col-12">
+    <div class="row">
+      <div class="col-lg-8 col-xl-6 offset-lg-2 offset-xl-3">
+        <div class="dashboard-header">
+          <h3 class="mb-0">Users</h3>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <app-user *ngFor="let user of users" [user]="user"></app-user>
+  </div>
+</div>

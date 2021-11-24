@@ -1,5 +1,5 @@
 <div class="row justify-content-center">
-  <form class="form col-12 col-lg-7">
+  <form class="form col-lg-8 col-xl-6">
     <div class="form-group font-size-xs justify-content-center row m-0">
       <div class="col-4 mb-2 d-none d-sm-block">
         <input
@@ -49,19 +49,26 @@
   </form>
 </div>
 <hr />
-<div class="row">
-  <div class="calendar-item" *ngFor="let day of weekDays">
-    <h4 class="title">{{ day }}</h4>
+<div class="col-lg-8 col-xl-6 offset-lg-2 offset-xl-3">
+  <div class="row">
+    <div class="calendar-item" *ngFor="let day of weekDays">
+      <h4 class="title">{{ day }}</h4>
+    </div>
   </div>
-</div>
-<div class="row align-items-center">
-  <div
-    class="calendar-item d-flex justify-content-center"
-    *ngFor="let day of currentMonthDays"
-  >
-    <div class="day" [ngClass]="day.active ? 'day-active' : 'day-unavailable'">
-      <span>{{ day }}</span>
-      <div class="notify" *ngIf="day.hasTasks"></div>
+  <div class="row align-items-center">
+    <div class="calendar-item" *ngFor="let day of currentMonthDays; index as i">
+      <div
+        class="day"
+        (click)="onSelectDay(day)"
+        [ngClass]="{
+          'day-active': day.isActive && !day.isToday,
+          'day-unavailable': !day.isActive,
+          'day-today': day.isToday
+        }"
+      >
+        <span>{{ day }}</span>
+        <div class="notify" *ngIf="day.hasTasks"></div>
+      </div>
     </div>
   </div>
 </div>

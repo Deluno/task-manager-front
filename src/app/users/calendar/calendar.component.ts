@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarService } from './calendar.service';
 import { Day } from './day.model';
 
@@ -15,7 +15,8 @@ export class CalendarComponent implements OnInit {
 
   constructor(
     private calendarService: CalendarService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   public get months() {
@@ -66,6 +67,18 @@ export class CalendarComponent implements OnInit {
 
   onYearChange() {
     this.setCurrentMonth();
+  }
+
+  onSelectDay(day: Day) {
+    if (!day.isActive) return;
+
+    const date = day.date;
+    this.router.navigate(['../tasks'], {
+      relativeTo: this.route,
+      queryParams: {
+        day: date.toISOString(),
+      },
+    });
   }
 
   private setCurrentMonth() {

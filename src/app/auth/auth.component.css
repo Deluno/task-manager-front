@@ -27,7 +27,3 @@ form,
     margin-top: auto;
   }
 }
-
-input.ng-invalid.ng-touched {
-  border: 1px solid red;
-}

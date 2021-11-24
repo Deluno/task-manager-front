@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { Observable } from 'rxjs';
-import { paswordsMatchValidator } from '../shared/passwords-match-validator.directive';
-import { AuthResponseData, AuthService } from './services/auth.service';
+import { take } from 'rxjs/operators';
+
+import { AuthService } from './services/auth.service';
+import { AuthResponse } from '../shared/services/api-endpoints.service';
 import { TokenStorageService } from './services/token-storage.service';
+import { paswordsMatchValidator } from '../shared/passwords-match-validator.directive';
 
 @Component({
   selector: 'app-auth',
@@ -24,12 +28,20 @@ export class AuthComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.authService.isSignedIn()) {
-      const user = this.tokenStorageService.getUser();
-      console.log(user.username);
-
-      this.router.navigate(['/users', user.username, 'calendar']);
-    }
+    this.isLoading = true;
+    this.authService.signInStatusChange$.pipe(take(1)).subscribe(
+      (user) => {
+        if (user) {
+          this.router
+            .navigate(['/users', user.username, 'calendar'])
+            .then(() => {
+              this.isLoading = false;
+            });
+        }
+      },
+      () => {},
+      () => (this.isLoading = false)
+    );
     this.isSignUp = this.router.url === '/auth/sign-up';
     this.initForm();
   }
@@ -40,7 +52,7 @@ export class AuthComponent implements OnInit {
     const username = this.authForm.value.username;
     const password = this.authForm.value.password;
 
-    let auth$: Observable<AuthResponseData>;
+    let auth$: Observable<AuthResponse>;
 
     this.isLoading = true;
     if (this.isSignUp) {
@@ -52,8 +64,10 @@ export class AuthComponent implements OnInit {
 
     auth$.subscribe(
       (res) => {
-        this.isLoading = false;
-        this.router.navigate(['/auth/sign-in']);
+        const user = this.tokenStorageService.getUser();
+        this.router.navigate(['/users', user.username, 'calendar']).then(() => {
+          this.isLoading = false;
+        });
       },
       (errorMessage) => {
         this.isLoading = false;

@@ -1,53 +1,38 @@
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Subject, throwError } from 'rxjs';
+
+import { BehaviorSubject, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
-import { User } from '../user.model';
+
+import { User } from 'src/app/shared/models/user.model';
 import { TokenStorageService } from './token-storage.service';
-
-export interface AuthResponseData {
-  accessToken: string;
-  refreshToken: string;
-}
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-};
+import { TasksService } from 'src/app/shared/services/tasks.service';
+import { ApiEndpointsService } from 'src/app/shared/services/api-endpoints.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  signInStatusChange$ = new Subject<User>();
+  signInStatusChange$ = new BehaviorSubject<User>(null);
   private _autoLogoutTimer: any;
 
   constructor(
-    private http: HttpClient,
+    private api: ApiEndpointsService,
     private router: Router,
     private jwtHelper: JwtHelperService,
-    private tokenStorageService: TokenStorageService
+    private tokenStorageService: TokenStorageService,
+    private tasksService: TasksService
   ) {}
 
   signin(username: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        environment.taskManagerAPIPath + '/auth/login',
-        { username, password },
-        httpOptions
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap((resData) => {
-          this.handleSign(resData.accessToken, resData.refreshToken);
-        })
-      );
+    return this.api.signin(username, password).pipe(
+      catchError(this.handleError),
+      tap((resData) => {
+        this.handleSign(resData.accessToken, resData.refreshToken);
+      })
+    );
   }
 
   autoSignIn() {
@@ -56,27 +41,23 @@ export class AuthService {
 
     const user = this.tokenStorageService.getUser();
     this.signInStatusChange$.next(user);
+
     const accessTokenExp = this.jwtHelper.getTokenExpirationDate(accessToken);
     this.autoLogout(accessTokenExp);
   }
 
   signup(username: string, email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        environment.taskManagerAPIPath + '/auth/register',
-        { username, email, password },
-        httpOptions
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap((resData) => {
-          this.handleSign(resData.accessToken, resData.refreshToken);
-        })
-      );
+    return this.api.signup(username, email, password).pipe(
+      catchError(this.handleError),
+      tap((resData) => {
+        this.handleSign(resData.accessToken, resData.refreshToken);
+      })
+    );
   }
 
   logout() {
     this.tokenStorageService.clearStorage();
+    this.tasksService.clearTasks();
     this.signInStatusChange$.next(null);
     this.router.navigate(['/auth', 'sign-in']);
     this.clearAutoLogoutTimer();
@@ -85,10 +66,10 @@ export class AuthService {
   autoLogout(accessTokenExp: Date) {
     const expDuration = accessTokenExp.getTime() - new Date().getTime();
     this._autoLogoutTimer = setTimeout(() => {
-      this.refreshAccess().subscribe(
-        (resData) => {
-          // alert('autoLoginRefresh');
+      const refresher = this.tokenStorageService.getRefreshToken();
 
+      this.api.refresh(refresher).subscribe(
+        (resData) => {
           this.clearAutoLogoutTimer();
           this.handleSign(resData.accessToken, resData.refreshToken);
         },
@@ -97,17 +78,6 @@ export class AuthService {
         }
       );
     }, expDuration);
-  }
-
-  private refreshAccess() {
-    const refresher = this.tokenStorageService.getRefreshToken();
-    return this.http.post<AuthResponseData>(
-      environment.taskManagerAPIPath + '/auth/refresh',
-      {
-        refreshToken: refresher,
-      },
-      httpOptions
-    );
   }
 
   isSignedIn() {
@@ -130,6 +100,7 @@ export class AuthService {
 
   private handleSign(accessToken: string, refreshToken: string) {
     const userData = this.jwtHelper.decodeToken(accessToken);
+
     const user = new User(userData.username, userData.role);
 
     this.tokenStorageService.saveUser(user);

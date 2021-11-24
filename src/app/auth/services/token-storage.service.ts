@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 
-import { User } from '../user.model';
+import { User } from 'src/app/shared/models/user.model';
 
 const ACCESS_TOKEN_KEY = 'auth-access-token';
 const REFRESH_TOKEN_KEY = 'auth-refresh-token';
@@ -45,7 +45,8 @@ export class TokenStorageService {
   getUser(): User {
     const user = sessionStorage.getItem(USER_KEY);
     if (user) {
-      return JSON.parse(user);
+      const parsed = JSON.parse(user);
+      return new User(parsed.username, parsed._role);
     }
     return;
   }

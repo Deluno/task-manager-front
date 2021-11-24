@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-lg-8 col-xl-6 offset-lg-2 offset-xl-3">
+    <div class="component-header">
+      <button class="btn btn-outline-primary" (click)="onView()">View</button>
+      <div class="btn-toolbar">
+        <app-user-modal [user]="user"></app-user-modal>
+        <button class="btn btn-danger ml-1" (click)="onDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8 col-xl-6 offset-lg-2 offset-xl-3 mb-4">
+    <div class="component-body">
+      <div class="component-body-field d-flex">
+        <i i-bs name="person" class="mr-3"></i>
+        <span class="component-title w-100"
+          >{{ user.username }} ({{ user.role }})</span
+        >
+      </div>
+      <div class="component-body-field d-flex m-0">
+        <i i-bs name="mailbox" class="mr-3"></i>
+        <span class="w-100">{{ user.email }}</span>
+      </div>
+    </div>
+  </div>
+</div>
