@@ -19,7 +19,7 @@ export class TaskComponent implements OnInit {
   ngOnInit(): void {}
 
   onDelete() {
-    const username = this.route.snapshot.params['username'];
+    const username = this.route.snapshot.parent.params['username'];
     this.tasksService.deleteTask(username, this.task.id).subscribe();
   }
 }

@@ -8,6 +8,7 @@ import { TasksComponent } from './users/tasks/tasks.component';
 import { DashboardComponent } from './users/dashboard/dashboard.component';
 import { UsersComponent } from './users/users.component';
 import { UsersResolver } from './users/dashboard/users-resolver.service';
+import { AdminGuard } from './auth/admin.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/auth/sign-in', pathMatch: 'full' },
@@ -17,20 +18,21 @@ const routes: Routes = [
     children: [
       {
         path: 'dashboard',
+        canActivate: [AdminGuard],
         component: DashboardComponent,
         resolve: [UsersResolver],
-      },
-      {
-        path: ':username/tasks',
-        canActivate: [AuthGuard],
-        component: TasksComponent,
-        resolve: [TasksResolver],
       },
       {
         path: ':username/calendar',
         canActivate: [AuthGuard],
         component: CalendarComponent,
         resolve: [TasksResolver],
+        children: [
+          {
+            path: ':day',
+            component: TasksComponent,
+          },
+        ],
       },
     ],
   },

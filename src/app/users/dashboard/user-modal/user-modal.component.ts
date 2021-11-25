@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
 import {
   NgbActiveModal,
   NgbModal,
@@ -12,7 +11,7 @@ import { UsersService } from '../users.service';
 @Component({
   selector: 'task-modal-content',
   template: `
-    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
       <div class="modal-header">
         <h4 class="modal-title">{{ user ? 'Edit' : 'New' }}</h4>
         <button
@@ -67,7 +66,7 @@ import { UsersService } from '../users.service';
           type="submit"
           class="btn"
           [ngClass]="user ? 'btn-primary' : 'btn-success'"
-          [disabled]="!taskForm.valid"
+          [disabled]="!userForm.valid"
         >
           {{ user ? 'Update' : 'Save' }}
         </button>
@@ -85,7 +84,7 @@ import { UsersService } from '../users.service';
 export class UserModalContent implements OnInit {
   @Input() user: User;
 
-  taskForm: FormGroup = new FormGroup({
+  userForm: FormGroup = new FormGroup({
     username: new FormControl(null, [
       Validators.required,
       Validators.minLength(5),
@@ -96,19 +95,39 @@ export class UserModalContent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private route: ActivatedRoute,
     private usersService: UsersService
   ) {}
 
   ngOnInit(): void {
-    this.taskForm.setValue({
+    this.userForm.setValue({
       username: this.user.username,
       email: this.user.email,
-      password: '',
+      password: null,
     });
+    this.userForm.controls['username'].disable();
   }
 
-  onSubmit() {}
+  onSubmit() {
+    const username =
+      this.userForm.value.username === this.user.username
+        ? null
+        : this.userForm.value.username;
+
+    const email =
+      this.userForm.value.email === this.user.email
+        ? null
+        : this.userForm.value.email;
+
+    const password = this.userForm.value.password;
+
+    let user: User;
+    if (this.user) {
+      user = new User(username, 'user', email, password);
+      this.usersService
+        .updateUser(this.user.username, user)
+        .subscribe(() => this.activeModal.close('Submit'));
+    }
+  }
 }
 
 @Component({

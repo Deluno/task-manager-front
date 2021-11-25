@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Task } from 'src/app/shared/models/task.model';
@@ -34,7 +34,13 @@ export class TasksComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const day = this.route.snapshot.queryParams['day'];
+    this.setDay();
+    this.route.params.subscribe((params: Params) => {
+      this.setDay(params['day']);
+    });
+  }
+
+  private setDay(day?: string) {
     this._date = day ? new Date(day) : this.getTodayDate();
     this.tasks = this.tasksService.getTasksOnDate(this._date);
 
@@ -49,6 +55,8 @@ export class TasksComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    console.log('called');
+
     this._tasksUpdatesSub.unsubscribe();
   }
 }

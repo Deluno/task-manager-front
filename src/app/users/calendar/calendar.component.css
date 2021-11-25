@@ -15,7 +15,8 @@
   border-radius: 0.2rem;
 }
 
-.calendar-item > .day-active:hover {
+.calendar-item > .day-active:hover,
+.calendar-item > .day-active:active {
   cursor: pointer;
   color: var(--primary);
   outline: 2px solid var(--primary);

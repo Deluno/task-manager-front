@@ -32,6 +32,25 @@ export class UsersService {
     this._users = [];
   }
 
+  updateUser(username: string, user: User) {
+    return this.api.patchUser(username, user).pipe(
+      tap(() => {
+        const userIndex = this._users.findIndex(
+          (aUser) => aUser.username === username
+        );
+
+        if (user.username) {
+          this._users[userIndex].username = user.username;
+        }
+        if (user.email) {
+          this._users[userIndex].email = user.email;
+        }
+
+        this.usersUpdates$.next(true);
+      })
+    );
+  }
+
   deleteUser(username: string) {
     return this.api.deleteUser(username).pipe(
       tap(() => {

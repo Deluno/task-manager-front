@@ -1,5 +1,8 @@
+import { ViewportScroller } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Task } from 'src/app/shared/models/task.model';
+import { TasksService } from 'src/app/shared/services/tasks.service';
 import { CalendarService } from './calendar.service';
 import { Day } from './day.model';
 
@@ -15,7 +18,9 @@ export class CalendarComponent implements OnInit {
 
   constructor(
     private calendarService: CalendarService,
+    private tasksService: TasksService,
     private route: ActivatedRoute,
+    private vps: ViewportScroller,
     private router: Router
   ) {}
 
@@ -34,11 +39,18 @@ export class CalendarComponent implements OnInit {
     );
   }
 
+  public get todayTasks(): Task[] {
+    const d = new Date();
+    const today = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    return this.tasksService.getTasksOnDate(today);
+  }
+
   ngOnInit(): void {
     const date = new Date();
     this.currentYear = date.getFullYear();
     this.currentMonthNumber = date.getMonth();
     this.setCurrentMonth();
+    this.setCurrentDay();
   }
 
   onMonthChange() {
@@ -72,18 +84,19 @@ export class CalendarComponent implements OnInit {
   onSelectDay(day: Day) {
     if (!day.isActive) return;
 
+    this.vps.scrollToAnchor('tasks');
     const date = day.date;
-    this.router.navigate(['../tasks'], {
-      relativeTo: this.route,
-      queryParams: {
-        day: date.toISOString(),
-      },
-    });
+    this.router.navigate([date.toISOString()], { relativeTo: this.route });
   }
 
   private setCurrentMonth() {
     this.currentMonth = this.calendarService.getMonthName(
       this.currentMonthNumber
     );
+  }
+
+  private setCurrentDay() {
+    const today = this.calendarService.getTodayDate();
+    this.router.navigate([today.toISOString()], { relativeTo: this.route });
   }
 }

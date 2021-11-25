@@ -84,6 +84,10 @@ export class AuthService {
     return !!this.tokenStorageService.getAccessToken();
   }
 
+  isAdmin() {
+    return this.tokenStorageService.getUser()?.role === 'admin';
+  }
+
   private handleError(errorRes: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';
     const status = errorRes.status;

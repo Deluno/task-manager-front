@@ -83,6 +83,7 @@ import { TasksService } from 'src/app/shared/services/tasks.service';
 })
 export class TaskModalContent implements OnInit {
   @Input() task: Task;
+  @Input() day: Date;
   private _today: Date;
 
   taskForm: FormGroup = new FormGroup({
@@ -93,8 +94,8 @@ export class TaskModalContent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private route: ActivatedRoute,
-    private tasksService: TasksService
+    private tasksService: TasksService,
+    public route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -114,11 +115,8 @@ export class TaskModalContent implements OnInit {
     const title = this.taskForm.value.title;
     const description = this.taskForm.value.description;
 
-    const snap = this.route.snapshot;
-    const user = snap.children[0].firstChild.params['username'];
-    const day = snap.queryParams['day'];
-
-    const datetime = day ? new Date(day) : this._today;
+    const user = this.route.snapshot.children[0].firstChild.params['username'];
+    const datetime = this.day ? new Date(this.day) : this._today;
 
     datetime.setHours(time.split(':')[0]);
     datetime.setMinutes(time.split(':')[1]);
@@ -155,6 +153,7 @@ export class TaskModalComponent implements OnInit {
 
   constructor(
     private modalService: NgbModal,
+    private route: ActivatedRoute,
     private tasksService: TasksService
   ) {}
 
@@ -163,7 +162,10 @@ export class TaskModalComponent implements OnInit {
   }
 
   open() {
+    const day = this.route.snapshot.params['day'];
+
     const modalRef = this.modalService.open(TaskModalContent, this._config);
     modalRef.componentInstance.task = this._task || null;
+    modalRef.componentInstance.day = day || null;
   }
 }

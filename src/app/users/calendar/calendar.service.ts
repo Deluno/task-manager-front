@@ -36,6 +36,11 @@ export class CalendarService {
     return this._weekDays.slice();
   }
 
+  getTodayDate() {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
   getDaysList(year: number, month: number): Day[] {
     const now = new Date();
     const d = new Date(year, month + 1, 0);
