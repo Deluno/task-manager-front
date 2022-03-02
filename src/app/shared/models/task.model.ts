@@ -4,11 +4,16 @@ export class Task {
     public title: string,
     public description: string,
     private _id?: number,
-    public usr?: string
+    public usr?: string,
+    private _files?: []
   ) {}
 
   get id() {
     return this._id;
+  }
+
+  get files() {
+    return this._files?.slice();
   }
 
   get time(): string {

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { FileModel } from '../models/file.model';
 import { Task } from '../models/task.model';
 import { User } from '../models/user.model';
 
@@ -16,6 +17,13 @@ export interface TaskResponse {
   title: string;
   description: string;
   usr: string;
+}
+
+export interface FileResponse {
+  id: number;
+  name: string;
+  path: string;
+  tid: number;
 }
 
 export interface UserResponse {
@@ -154,14 +162,44 @@ export class ApiEndpointsService {
 
   // Files end-points
   getFiles(username: string, taskId: number) {
+    return this.http
+      .get<FileResponse[]>(
+        `${environment.taskManagerAPIPath}/users/${username}/tasks/${taskId}/files`
+      )
+      .pipe(
+        map((files) => {
+          const fileModels: FileModel[] = [];
+          for (const file of files) {
+            const fileModel = new FileModel(
+              file.id,
+              file.name,
+              file.path,
+              file.tid
+            );
+            fileModels.push(fileModel);
+          }
+          return fileModels;
+        })
+      );
+  }
+
+  getFile(username: string, taskId: number, fileId: number) {
     return this.http.get(
-      `${environment.taskManagerAPIPath}/users/${username}/tasks/${taskId}/files`
+      `${environment.taskManagerAPIPath}/users/${username}/tasks/${taskId}/files/${fileId}`,
+      { responseType: 'blob' }
     );
   }
 
-  postFile(username: string, taskId: number, file: any) {
-    return this.http.get(
-      `${environment.taskManagerAPIPath}/users/${username}/tasks/${taskId}/files`
+  postFile(username: string, taskId: number, form: FormData) {
+    return this.http.post<FileResponse>(
+      `${environment.taskManagerAPIPath}/users/${username}/tasks/${taskId}/files`,
+      form
+    );
+  }
+
+  deleteFile(username: string, taskId: number, fileId: number) {
+    return this.http.delete(
+      `${environment.taskManagerAPIPath}/users/${username}/tasks/${taskId}/files/${fileId}`
     );
   }
 }

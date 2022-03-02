@@ -22,7 +22,27 @@
         <span>{{ task.description }}</span>
       </div>
       <hr />
-      <!-- <p><i i-bs name="file-earmark" class="mr-3"></i>{{ "Some files" }}</p> -->
+      <p><i i-bs name="file-earmark" class="mr-3"></i>Files:</p>
+      <div *ngIf="!files || files.length > 0">
+        <ul class="list-group mt-3">
+          <li class="list-group-item" *ngFor="let file of files">
+            <span class="d-inline-block"
+              ><a style="cursor: pointer" (click)="onFileClick(file)">{{
+                file.name
+              }}</a></span
+            >
+            <button
+              class="btn btn-danger d-inline-block float-right px-2 py-0"
+              (click)="onFileDelete(file)"
+            >
+              X
+            </button>
+          </li>
+        </ul>
+      </div>
+      <ul class="list-group mt-3" *ngIf="!files || files.length === 0">
+        <li class="list-group-item">No files.</li>
+      </ul>
     </div>
   </div>
 </div>

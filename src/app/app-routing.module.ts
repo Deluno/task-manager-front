@@ -9,6 +9,7 @@ import { DashboardComponent } from './users/dashboard/dashboard.component';
 import { UsersComponent } from './users/users.component';
 import { UsersResolver } from './users/dashboard/users-resolver.service';
 import { AdminGuard } from './auth/admin.guard';
+import { FilesResolver } from './shared/services/files-resolver.service';
 
 const routes: Routes = [
   { path: '', redirectTo: '/auth/sign-in', pathMatch: 'full' },
@@ -31,6 +32,7 @@ const routes: Routes = [
           {
             path: ':day',
             component: TasksComponent,
+            resolve: [FilesResolver],
           },
         ],
       },

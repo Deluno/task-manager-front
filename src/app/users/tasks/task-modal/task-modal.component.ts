@@ -8,12 +8,17 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 
 import { Task } from 'src/app/shared/models/task.model';
+import { FilesService } from 'src/app/shared/services/files.service';
 import { TasksService } from 'src/app/shared/services/tasks.service';
 
 @Component({
   selector: 'task-modal-content',
   template: `
-    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <form
+      [formGroup]="taskForm"
+      (ngSubmit)="onSubmit()"
+      enctype="multipart/form-data"
+    >
       <div class="modal-header">
         <h4 class="modal-title">{{ task ? 'Edit' : 'New' }}</h4>
         <button
@@ -60,6 +65,30 @@ import { TasksService } from 'src/app/shared/services/tasks.service';
             />
           </div>
         </div>
+        <div class="form-row" *ngIf="task">
+          <div class="form-group col-12">
+            <span>File upload:</span>
+            <div class="custom-file">
+              <label class="custom-file-label" for="taskFiles"
+                >Choose file</label
+              >
+              <input
+                type="file"
+                class="custom-file-input"
+                id="taskFiles"
+                formControlName="taskFiles"
+                (change)="onFileSelected($event)"
+              />
+            </div>
+          </div>
+          <div class="col">
+            <ul class="list-group">
+              <li class="list-group-item" *ngFor="let file of selectedFiles">
+                {{ file.name }}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button
@@ -84,10 +113,13 @@ import { TasksService } from 'src/app/shared/services/tasks.service';
 export class TaskModalContent implements OnInit {
   @Input() task: Task;
   @Input() day: Date;
+
+  selectedFiles: FileList;
+
   private _today: Date;
 
   taskForm: FormGroup = new FormGroup({
-    time: new FormControl(),
+    time: new FormControl(null, [Validators.required]),
     title: new FormControl(null, [Validators.required]),
     description: new FormControl(),
   });
@@ -95,19 +127,29 @@ export class TaskModalContent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private tasksService: TasksService,
-    public route: ActivatedRoute
+    private filesService: FilesService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     const d = new Date();
-    const timeNow = `${d.getHours()}:${d.getMinutes()}`;
+    const timeNow = d.getHours() + ':' + d.getMinutes();
 
     this.taskForm.setValue({
       time: this.task?.time || timeNow,
       title: this.task?.title || this.task,
       description: this.task?.description || this.task,
     });
+
+    if (this.task) {
+      this.taskForm.addControl('taskFiles', new FormControl());
+    }
+
     this._today = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  onFileSelected(event: PointerEvent) {
+    this.selectedFiles = event.target['files'];
   }
 
   onSubmit() {
@@ -124,9 +166,15 @@ export class TaskModalContent implements OnInit {
     let task: Task;
     if (this.task) {
       task = new Task(datetime, title, description, this.task.id);
-      this.tasksService
-        .updateTask(user, task)
-        .subscribe(() => this.activeModal.close('Submit'));
+      this.tasksService.updateTask(user, task).subscribe(() => {
+        if (this.selectedFiles) {
+          this.filesService
+            .uploadFile(user, this.task.id, this.selectedFiles[0])
+            .subscribe(() => this.activeModal.close('Submit'));
+        } else {
+          this.activeModal.close('Submit');
+        }
+      });
     } else {
       task = new Task(datetime, title, description);
       this.tasksService

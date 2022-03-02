@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mb-3">
   <div class="col">
     <div class="tasks-header">
       <h3 class="date-title d-inline mb-0">{{ date }}</h3>
@@ -6,6 +6,5 @@
     </div>
   </div>
 </div>
-<hr />
-<p class="mb-5" *ngIf="tasks.length == 0">No tasks</p>
+<p class="mb-5" *ngIf="tasks.length === 0">No tasks</p>
 <app-task *ngFor="let task of tasks" [task]="task"></app-task>
